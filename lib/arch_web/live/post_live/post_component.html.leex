@@ -1,0 +1,28 @@
+<div class="post">
+    <div class="row">
+        <div class="column column-90 post-body">
+            <b><%= @post.user.email %></b>
+            <br/>
+            <%= @post.body %>
+            <div class="column">
+                <%= for url <- @post.photo_urls do%>
+                    <a href="#" phx-click="show-post-photo-gallery" phx-target="<%= @myself %>">
+                        <img src="<%= url %>" height="150" />
+                    </a>
+                <% end %>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <%= if @current_user.id == @post.user_id do %>
+            <div class="column">
+                <span>
+                    <%= live_patch "Edit", to: Routes.post_index_path(@socket, :edit, @post.id) %>
+                </span>
+                <span>
+                    <%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @post.id, data: [confirm: "Are you sure?"]%>
+                </span>
+            </div>
+        <% end %>
+    </div>
+</div>

@@ -1,0 +1,19 @@
+<h1>Timeline</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal @socket, ArchWeb.PostLive.FormComponent,
+    id: @post.id || :new,
+    title: @page_title,
+    action: @live_action,
+    post: @post,
+    current_user: @current_user,
+    return_to: Routes.post_index_path(@socket, :index) %>
+<% end %>
+
+  <div id="posts">
+    <%= for post <- @posts do %>
+      <%= live_component @socket, ArchWeb.PostLive.PostComponent, id: post.id, post: post, current_user: @current_user%>
+    <% end %>
+</div>
+
+<span><%= live_patch "New Post", to: Routes.post_index_path(@socket, :new) %></span>
