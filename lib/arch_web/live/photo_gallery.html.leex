@@ -1,0 +1,5 @@
+<h1>Photo Gallery</h1>
+<%= for url <- @post.photo_urls do%>
+    <img src="<%= url %>" />
+    <p><%= @metadata_list %></p>
+<% end %>

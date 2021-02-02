@@ -10,11 +10,11 @@
   <%= text_input f, :body %>
   <%= error_tag f, :body %>
 
-  <%= for {_ref, msg} <- @uploads.photo.errors do %>
+  <%= for {_ref, msg} <- @uploads.file.errors do %>
     <p class="alert alert-danger"><%= Phoenix.Naming.humanize(msg) %></p>
   <% end %>
-  <%= live_file_input @uploads.photo %>
-  <%= for entry <- @uploads.photo.entries do %>
+  <%= live_file_input @uploads.file %>
+  <%= for entry <- @uploads.file.entries do %>
     <div class="row">
       <div class="column">
         <%= live_img_preview entry, height: 80 %>

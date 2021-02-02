@@ -6,7 +6,7 @@ defmodule ArchWeb.PostLive.FormComponent do
 
   @impl true
   def mount(socket) do
-   {:ok, allow_upload(socket, :photo, accept: ~w(.png .jpeg .jpg), max_entries: 10)}
+   {:ok, allow_upload(socket, :file, accept: ~w(.png .jpeg .jpg .mp3 .zip .doc), max_entries: 10)}
   end
 
   @impl true
@@ -21,7 +21,7 @@ defmodule ArchWeb.PostLive.FormComponent do
 
   @impl true
   def handle_event("cancel-entry", %{"ref" => ref}, socket) do
-    {:noreply, cancel_upload(socket, :photo, ref)}
+    {:noreply, cancel_upload(socket, :file, ref)}
   end
 
   @impl true
@@ -39,8 +39,8 @@ defmodule ArchWeb.PostLive.FormComponent do
   end
 
   defp save_post(socket, :edit, post_params) do
-    post = put_photo_urls(socket, socket.assigns.post)
-    case Timeline.update_post(post, post_params, &consume_photos(socket, &1)) do
+    post = put_file_urls(socket, socket.assigns.post)
+    case Timeline.update_post(post, post_params, &consume_files(socket, &1)) do
       {:ok, _post} ->
         {:noreply,
          socket
@@ -53,8 +53,8 @@ defmodule ArchWeb.PostLive.FormComponent do
   end
 
   defp save_post(socket, :new, post_params) do
-    post = put_photo_urls(socket, %Post{})
-    case Timeline.create_post(socket.assigns.current_user, post, post_params, &consume_photos(socket, &1)) do
+    post = put_file_urls(socket, %Post{})
+    case Timeline.create_post(socket.assigns.current_user, post, post_params, &consume_files(socket, &1)) do
       {:ok, _post} ->
         {:noreply,
          socket
@@ -71,18 +71,19 @@ defmodule ArchWeb.PostLive.FormComponent do
     ext
   end
 
-  defp put_photo_urls(socket, %Post{} = post) do
-    {completed, []  } = uploaded_entries(socket, :photo)
+  defp put_file_urls(socket, %Post{} = post) do
+    {completed, []  } = uploaded_entries(socket, :file)
     urls =
       for entry <- completed do
-        Routes.static_path(socket,"/uploads/#{entry.uuid}.#{ext(entry)}")
+        IO.inspect entry
+        Routes.static_path(socket,"/uploads/#{entry.uuid}.#{entry.client_name}")
       end
-    %Post{ post | photo_urls: urls}
+    %Post{ post | file_urls: urls}
   end
 
-  def consume_photos(socket, %Post{} = post) do
-    consume_uploaded_entries(socket, :photo, fn meta, entry ->
-      dest = Path.join("priv/static/uploads","#{entry.uuid}.#{ext(entry)}")
+  def consume_files(socket, %Post{} = post) do
+    consume_uploaded_entries(socket, :file, fn meta, entry ->
+      dest = Path.join("priv/static/uploads","#{entry.uuid}.#{entry.client_name}")
       File.cp!(meta.path, dest)
     end)
     {:ok, post}

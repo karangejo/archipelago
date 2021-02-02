@@ -45,6 +45,9 @@ defmodule ArchWeb.PostLive.Index do
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     post = Timeline.get_post!(id)
+    for file <- post.file_urls do
+      File.rm!("priv/static" <> file)
+    end
     {:ok, _} = Timeline.delete_post(post)
 
     {:noreply, assign(socket, :posts, list_posts())}

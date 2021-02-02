@@ -4,7 +4,7 @@ defmodule Arch.Timeline.Post do
 
   schema "posts" do
     field :body, :string
-    field :photo_urls, {:array, :string}, defaul: []
+    field :file_urls, {:array, :string}, defaul: []
     belongs_to :user, Arch.Accounts.User
 
     timestamps()

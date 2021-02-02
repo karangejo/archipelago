@@ -5,10 +5,17 @@
             <br/>
             <%= @post.body %>
             <div class="column">
-                <%= for url <- @post.photo_urls do%>
-                    <a href="#" phx-click="show-post-photo-gallery" phx-target="<%= @myself %>">
-                        <img src="<%= url %>" height="150" />
-                    </a>
+                <%= for url <- @post.file_urls do%>
+                    <%= link to: "/gallery/#{@post.id}" do %>
+                        <%= case hd(String.split(MIME.from_path(url),"/")) do %>
+                            <% "image" -> %>
+                                <img src="<%= url %>" height="150" />
+                            <% "application" -> %>
+                                <a download href="<%= url %>">
+                                    <%= hd(tl String.split(url, ".", parts: 2))%>
+                                </a>
+                        <% end %>
+                    <% end %>
                 <% end %>
             </div>
         </div>
